@@ -1,0 +1,239 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -704,
+        208
+      ],
+      "id": "c0dbe45a-4664-44a9-bbc3-20fd473e252e",
+      "name": "Webhook",
+      "webhookId": "3dce1c35-502d-4df8-a0fa-c16fd00a42c6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:7860/api/v1/run/98ac35b0-42ed-4a6a-88fd-fa735f2b08ea",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"x-api-key\": \"sk-lqJMvKCcJvPTB0hfqah0jqcKWosSZGlzbuSj3YG872k\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"output_type\": \"chat\",\n  \"input_type\": \"chat\",\n  \"input_value\": \"={{ $json.body.entry[0].changes[0].value.messages[0].text.body }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -192,
+        224
+      ],
+      "id": "f144b130-3ef1-4cf0-b86d-27af0d04c296",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -656,
+        720
+      ],
+      "id": "f0862eb6-f2a9-4e49-ab7d-bd96de5d9e22",
+      "name": "Webhook1",
+      "webhookId": "3dce1c35-502d-4df8-a0fa-c16fd00a42c6"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query[\"hub.challenge\"] }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -256,
+        704
+      ],
+      "id": "4f6f53f0-3fa8-418f-abf3-fd1790e202e2",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v25.0/1078541808685954/messages",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer EAASyZBDp5IesBR58Y135zcapLvylUQ8dTrREyEJs7gObwGcViO6J7mrBlgCMcAwvf1XTTQPiZA3SiRDQbZBn5zpTtQFmBMgEp14lYGet8J7UThYgLQu0ZB1djmZChFdk21k24qwYk9QHkUgXgqUjwTih94VTiOzdcBkC2ZAQ8pMO4rmrYLEUTomEfi9BlJQwZDZD\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $('Webhook').item.json.body.entry[0].changes[0].value.messages[0].from }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"body\": \"{{ $json.outputs[0].outputs[0].results.message.text.replace(/\\n/g, ' ') }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        224
+      ],
+      "id": "3ccf764e-c1e4-4169-b3e5-266d68ce29a8",
+      "name": "HTTP Request2",
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "85fdd1ed-0265-4c8d-868f-f917b0908d57",
+              "leftValue": "={{ $json.body.entry[0].changes[0].value.messages[0].type }}",
+              "rightValue": "=text",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -448,
+        240
+      ],
+      "id": "0f07d69d-28eb-46d8-8480-495722b7d8e3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -224,
+        432
+      ],
+      "id": "ca65c260-ad2e-47a7-9381-342bd1cecd06",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        272,
+        224
+      ],
+      "id": "244609c6-87c3-45c3-a065-4003fea2decc",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f91aa806-bc48-46ee-9cd7-1199eb30ce36",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "072cda1ca8aaa746bb13bc5c8bb202dc076d18a897749fccf671cacf3d05d34c"
+  },
+  "id": "GeSWYa2dgl4DDAnG",
+  "tags": []
+}
